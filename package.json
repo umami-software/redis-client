@@ -1,5 +1,5 @@
 {
-  "name": "@umami/redis",
+  "name": "@umami/redis-client",
   "version": "0.1.0",
   "description": "Redis client wrapper",
   "main": "dist/index.js",
@@ -13,7 +13,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/umami-software/connect.git"
+    "url": "git+https://github.com/umami-software/redis-client.git"
   },
   "scripts": {
     "build": "rollup -c"

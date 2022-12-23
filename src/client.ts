@@ -1,7 +1,7 @@
 import { createClient } from 'redis';
 import debug from 'debug';
 
-const log = debug('umami:redis');
+const log = debug('umami:redis-client');
 const REDIS = Symbol();
 
 let redis;
@@ -56,22 +56,22 @@ async function incr(key: string) {
   return redis.incr(key);
 }
 
-async function expire(key: string, seconds = 1) {
+async function expire(key: string, seconds: number) {
   await connect();
 
   return redis.expire(key, seconds);
 }
 
-async function incrWithExpire(key: string, expireLength: number) {
+async function rateLimit(key: string, limit: number, seconds: number): Promise<boolean> {
   await connect();
 
   const res = await redis.incr(key);
 
   if (res === 1) {
-    return redis.expire(key, expireLength);
+    await redis.expire(key, seconds);
   }
 
-  return res;
+  return res >= limit;
 }
 
 async function connect() {
@@ -83,8 +83,9 @@ async function connect() {
 }
 
 export default {
-  enabled,
+  REDIS,
   client: redis,
+  enabled,
   log,
   connect,
   get,
@@ -92,5 +93,5 @@ export default {
   del,
   incr,
   expire,
-  incrWithExpire
+  rateLimit
 };
