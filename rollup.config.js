@@ -1,8 +1,9 @@
-import ts from 'rollup-plugin-ts';
 import resolve from '@rollup/plugin-node-resolve';
-import external from 'rollup-plugin-peer-deps-external';
 import commonjs from '@rollup/plugin-commonjs';
-import { terser } from 'rollup-plugin-terser';
+import esbuild from 'rollup-plugin-esbuild';
+import dts from 'rollup-plugin-dts';
+
+const external = ['redis','debug'];
 
 export default [
   {
@@ -15,17 +16,23 @@ export default [
       },
     ],
     plugins: [
-      external(),
       resolve(),
       commonjs(),
-      ts(),
-      terser({
-        format: {
-          comments: false,
-        },
-      }),
+      esbuild()
     ],
-
-    external: ['redis','debug'],
+    external,
+  },
+  {
+    input: 'src/client.ts',
+    output: [
+      {
+        file: 'dist/index.d.ts',
+        format: 'es',
+      },
+    ],
+    plugins: [
+      dts()
+    ],
+    external,
   },
 ];
