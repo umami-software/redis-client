@@ -76,7 +76,7 @@ async function rateLimit(key: string, limit: number, seconds: number): Promise<b
 }
 
 async function fetchObject(key: string, query: () => Promise<any>, time: number | null = null) {
-  const obj = await redis.get(key);
+  const obj = await get(key);
 
   if (obj === DELETED) {
     return null;
@@ -85,10 +85,10 @@ async function fetchObject(key: string, query: () => Promise<any>, time: number 
   if (!obj && query) {
     return query().then(async data => {
       if (data) {
-        await redis.set(key, data);
+        await set(key, data);
 
         if (time !== null) {
-          await redis.expire(key, time);
+          await expire(key, time);
         }
       }
 
@@ -100,11 +100,11 @@ async function fetchObject(key: string, query: () => Promise<any>, time: number 
 }
 
 async function storeObject(key: string, data: any) {
-  return redis.set(key, data);
+  return set(key, data);
 }
 
 async function deleteObject(key: string, soft = false) {
-  return soft ? redis.set(key, DELETED) : redis.del(key);
+  return soft ? set(key, DELETED) : del(key);
 }
 
 async function connect() {
