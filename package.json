@@ -1,6 +1,6 @@
 {
   "name": "@umami/redis-client",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Redis client wrapper",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

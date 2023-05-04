@@ -3,6 +3,7 @@ import debug from 'debug';
 
 const log = debug('umami:redis-client');
 const REDIS = Symbol();
+const DELETED = '__DELETED__';
 
 let redis;
 const url = process.env.REDIS_URL;
@@ -74,6 +75,38 @@ async function rateLimit(key: string, limit: number, seconds: number): Promise<b
   return res >= limit;
 }
 
+async function fetchObject(key, query, time) {
+  const obj = await redis.get(key);
+
+  if (obj === DELETED) {
+    return null;
+  }
+
+  if (!obj && query) {
+    return query().then(async data => {
+      if (data) {
+        await redis.set(key, data);
+
+        if (time) {
+          await redis.expire(key, time);
+        }
+      }
+
+      return data;
+    });
+  }
+
+  return obj;
+}
+
+async function storeObject(key, data) {
+  return redis.set(key, data);
+}
+
+async function deleteObject(key, soft = false) {
+  return soft ? redis.set(key, DELETED) : redis.del(key);
+}
+
 async function connect() {
   if (!redis && enabled) {
     redis = global[REDIS] || (await getClient());
@@ -93,5 +126,8 @@ export default {
   del,
   incr,
   expire,
-  rateLimit
+  rateLimit,
+  fetchObject,
+  storeObject,
+  deleteObject,
 };
