@@ -6,10 +6,10 @@ const REDIS = Symbol();
 const DELETED = '__DELETED__';
 
 let redis;
-const url = process.env.REDIS_URL;
-const enabled = Boolean(url);
+const redisUrl = process.env.REDIS_URL;
+const enabled = Boolean(redisUrl);
 
-async function getClient() {
+async function getClient(url: string, isGlobal = true) {
   if (!enabled) {
     return null;
   }
@@ -18,7 +18,7 @@ async function getClient() {
   client.on('error', err => log(err));
   await client.connect();
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'production' && isGlobal) {
     global[REDIS] = client;
   }
 
@@ -27,10 +27,12 @@ async function getClient() {
   return client;
 }
 
-async function get(key: string) {
-  await connect();
+async function get(key: string, redisClient?) {
+  if (!redisClient) {
+    await connect();
+  }
 
-  const data = await redis.get(key);
+  const data = await (redisClient || redis).get(key);
 
   try {
     return JSON.parse(data);
@@ -39,44 +41,64 @@ async function get(key: string) {
   }
 }
 
-async function set(key: string, value: any) {
-  await connect();
+async function set(key: string, value: any, redisClient?) {
+  if (!redisClient) {
+    await connect();
+  }
 
-  return redis.set(key, JSON.stringify(value));
+  return (redisClient || redis).set(key, JSON.stringify(value));
 }
 
-async function del(key: string) {
-  await connect();
+async function del(key: string, redisClient?) {
+  if (!redisClient) {
+    await connect();
+  }
 
-  return redis.del(key);
+  return (redisClient || redis).del(key);
 }
 
-async function incr(key: string) {
-  await connect();
+async function incr(key: string, redisClient?) {
+  if (!redisClient) {
+    await connect();
+  }
 
-  return redis.incr(key);
+  return (redisClient || redis).incr(key);
 }
 
-async function expire(key: string, seconds: number) {
-  await connect();
+async function expire(key: string, seconds: number, redisClient?) {
+  if (!redisClient) {
+    await connect();
+  }
 
-  return redis.expire(key, seconds);
+  return (redisClient || redis).expire(key, seconds);
 }
 
-async function rateLimit(key: string, limit: number, seconds: number): Promise<boolean> {
-  await connect();
+async function rateLimit(
+  key: string,
+  limit: number,
+  seconds: number,
+  redisClient?,
+): Promise<boolean> {
+  if (!redisClient) {
+    await connect();
+  }
 
-  const res = await redis.incr(key);
+  const res = await (redisClient || redis).incr(key);
 
   if (res === 1) {
-    await redis.expire(key, seconds);
+    await (redisClient || redis).expire(key, seconds);
   }
 
   return res >= limit;
 }
 
-async function fetchObject(key: string, query: () => Promise<any>, time: number | null = null) {
-  const obj = await get(key);
+async function fetchObject(
+  key: string,
+  query: () => Promise<any>,
+  time: number | null = null,
+  redisClient?,
+) {
+  const obj = await get(key, redisClient);
 
   if (obj === DELETED) {
     return null;
@@ -85,10 +107,10 @@ async function fetchObject(key: string, query: () => Promise<any>, time: number 
   if (!obj && query) {
     return query().then(async data => {
       if (data) {
-        await set(key, data);
+        await set(key, data, redisClient);
 
         if (time !== null) {
-          await expire(key, time);
+          await expire(key, time, redisClient);
         }
       }
 
@@ -99,17 +121,17 @@ async function fetchObject(key: string, query: () => Promise<any>, time: number 
   return obj;
 }
 
-async function storeObject(key: string, data: any) {
-  return set(key, data);
+async function storeObject(key: string, data: any, redisClient?) {
+  return set(key, data, redisClient);
 }
 
-async function deleteObject(key: string, soft = false) {
-  return soft ? set(key, DELETED) : del(key);
+async function deleteObject(key: string, soft = false, redisClient?) {
+  return soft ? set(key, DELETED, redisClient) : del(key, redisClient);
 }
 
 async function connect() {
   if (!redis && enabled) {
-    redis = global[REDIS] || (await getClient());
+    redis = global[REDIS] || (await getClient(redisUrl as string));
   }
 
   return redis;
@@ -120,6 +142,7 @@ export default {
   client: redis,
   enabled,
   log,
+  getClient,
   connect,
   get,
   set,
