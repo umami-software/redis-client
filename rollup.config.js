@@ -3,7 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import esbuild from 'rollup-plugin-esbuild';
 import dts from 'rollup-plugin-dts';
 
-const external = ['redis','debug'];
+const external = ['redis', 'debug'];
 
 export default [
   {
@@ -12,14 +12,9 @@ export default [
       {
         file: 'dist/index.js',
         format: 'cjs',
-        exports: 'default'
       },
     ],
-    plugins: [
-      resolve(),
-      commonjs(),
-      esbuild()
-    ],
+    plugins: [resolve(), commonjs(), esbuild()],
     external,
   },
   {
@@ -30,9 +25,7 @@ export default [
         format: 'es',
       },
     ],
-    plugins: [
-      dts()
-    ],
+    plugins: [dts()],
     external,
   },
 ];
