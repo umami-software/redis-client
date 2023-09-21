@@ -3,7 +3,7 @@ import UmamiRedisClient from './UmamiRedisClient';
 const REDIS = Symbol();
 
 const url = process.env.REDIS_URL;
-const enabled = Boolean(url);
+export const enabled = Boolean(url);
 
 export function getClient() {
   if (!enabled) {
