@@ -12,6 +12,7 @@ export default [
       {
         file: 'dist/index.js',
         format: 'cjs',
+        exports: 'named',
       },
     ],
     plugins: [resolve(), commonjs(), esbuild()],
