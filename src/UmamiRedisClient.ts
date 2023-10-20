@@ -76,7 +76,7 @@ export class UmamiRedisClient {
     return res >= limit;
   }
 
-  async fetchObject(key: string, query: () => Promise<any>, time: number | null = null) {
+  async getCache(key: string, query: () => Promise<any>, time: number | null = null) {
     const obj = await this.get(key);
 
     if (obj === DELETED) {
@@ -100,11 +100,11 @@ export class UmamiRedisClient {
     return obj;
   }
 
-  async storeObject(key: string, data: any) {
+  async setCache(key: string, data: any) {
     return this.set(key, data);
   }
 
-  async deleteObject(key: string, soft = false) {
+  async deleteCache(key: string, soft = false) {
     return soft ? this.set(key, DELETED) : this.del(key);
   }
 }
