@@ -1,20 +1,13 @@
-import { createClient, RedisClientType } from 'redis';
-import debug from 'debug';
+import { RedisClientType } from 'redis';
+import { log } from 'log';
 
-const log = debug('umami:redis-client');
 const DELETED = '__DELETED__';
 
 export class UmamiRedisClient {
-  url: string;
   client: RedisClientType;
   isConnected: boolean;
 
-  constructor(url: string) {
-    this.url = url;
-
-    const client = createClient({ url });
-    client.on('error', err => log(err));
-
+  constructor(client: RedisClientType) {
     this.client = client as RedisClientType;
     this.isConnected = false;
   }

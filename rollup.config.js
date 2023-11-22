@@ -7,7 +7,7 @@ const external = ['redis', 'debug'];
 
 export default [
   {
-    input: 'src/client.ts',
+    input: 'src/index.ts',
     output: [
       {
         file: 'dist/index.js',
@@ -19,7 +19,7 @@ export default [
     external,
   },
   {
-    input: 'src/client.ts',
+    input: 'src/index.ts',
     output: [
       {
         file: 'dist/index.d.ts',
