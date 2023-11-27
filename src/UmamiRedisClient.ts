@@ -1,7 +1,7 @@
 import { createClient, RedisClientType } from 'redis';
 import debug from 'debug';
 
-export const log = debug('umami:redis-client');
+const log = debug('umami:redis-client');
 
 const DELETED = '__DELETED__';
 
