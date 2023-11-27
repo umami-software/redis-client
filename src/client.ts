@@ -1,11 +1,18 @@
-import { createClient } from 'redis';
 import UmamiRedisClient from './UmamiRedisClient';
-import { log } from 'log';
 
-const logError = (err: unknown) => log(err);
+const REDIS = Symbol();
+const enabled = !!process.env.REDIS_URL;
 
-export function getClient(url = process.env.REDIS_URL) {
-  const client = createClient({ url }).on('error', logError);
-
-  return new UmamiRedisClient(client as any);
+export function getClient(url: string = '') {
+  return new UmamiRedisClient(url);
 }
+
+const client = enabled && (global[REDIS] || getClient(process.env.REDIS_URL));
+
+if (!global[REDIS]) {
+  global[REDIS] = client;
+}
+
+export { UmamiRedisClient };
+
+export default { enabled, client };
