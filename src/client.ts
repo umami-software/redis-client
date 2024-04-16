@@ -15,4 +15,4 @@ if (!global[REDIS]) {
 
 export { UmamiRedisClient };
 
-export default { enabled, client };
+export default { enabled, client, REDIS };
