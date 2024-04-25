@@ -41,16 +41,10 @@ export class UmamiRedisClient {
     }
   }
 
-  async set(key: string, value: any, expire: number = 0) {
+  async set(key: string, value: any) {
     await this.connect();
 
-    const result = this.client.set(key, JSON.stringify(value));
-
-    if (expire > 0) {
-      await this.expire(key, expire);
-    }
-
-    return result;
+    return this.client.set(key, JSON.stringify(value));
   }
 
   async del(key: string) {
@@ -93,11 +87,7 @@ export class UmamiRedisClient {
     if (!result && query) {
       return query().then(async data => {
         if (data) {
-          await this.set(key, data);
-
-          if (time > 0) {
-            await this.expire(key, time);
-          }
+          await this.store(key, data, time);
         }
 
         return data;
@@ -107,8 +97,14 @@ export class UmamiRedisClient {
     return result;
   }
 
-  async store(key: string, data: any) {
-    return this.set(key, data);
+  async store(key: string, data: any, time: number = 0) {
+    const result = this.set(key, data);
+
+    if (time > 0) {
+      await this.expire(key, time);
+    }
+
+    return result;
   }
 
   async remove(key: string, soft = false) {
