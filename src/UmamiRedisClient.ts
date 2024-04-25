@@ -41,10 +41,16 @@ export class UmamiRedisClient {
     }
   }
 
-  async set(key: string, value: any) {
+  async set(key: string, value: any, expire: number = 0) {
     await this.connect();
 
-    return this.client.set(key, JSON.stringify(value));
+    const result = this.client.set(key, JSON.stringify(value));
+
+    if (expire > 0) {
+      await this.expire(key, expire);
+    }
+
+    return result;
   }
 
   async del(key: string) {
@@ -77,19 +83,19 @@ export class UmamiRedisClient {
     return res >= limit;
   }
 
-  async getCache(key: string, query: () => Promise<any>, time: number | null = null) {
-    const obj = await this.get(key);
+  async fetch(key: string, query: () => Promise<any>, time: number = 0) {
+    const result = await this.get(key);
 
-    if (obj === DELETED) {
+    if (result === DELETED) {
       return null;
     }
 
-    if (!obj && query) {
+    if (!result && query) {
       return query().then(async data => {
         if (data) {
           await this.set(key, data);
 
-          if (time !== null) {
+          if (time > 0) {
             await this.expire(key, time);
           }
         }
@@ -98,14 +104,14 @@ export class UmamiRedisClient {
       });
     }
 
-    return obj;
+    return result;
   }
 
-  async setCache(key: string, data: any) {
+  async store(key: string, data: any) {
     return this.set(key, data);
   }
 
-  async deleteCache(key: string, soft = false) {
+  async remove(key: string, soft = false) {
     return soft ? this.set(key, DELETED) : this.del(key);
   }
 }
