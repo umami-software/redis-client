@@ -7,7 +7,7 @@ export function getClient(url: string = '') {
   return new UmamiRedisClient(url);
 }
 
-const client = enabled && (global[REDIS] || getClient(process.env.REDIS_URL));
+const client: UmamiRedisClient = enabled && (global[REDIS] || getClient(process.env.REDIS_URL));
 
 if (!global[REDIS]) {
   global[REDIS] = client;
