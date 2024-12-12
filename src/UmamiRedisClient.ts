@@ -12,7 +12,7 @@ export class UmamiRedisClient {
   client: RedisClientType;
   isConnected: boolean;
 
-  constructor(url: string) {
+  constructor(url: string = '') {
     const client = createClient({ url }).on('error', logError);
 
     this.url = url;
