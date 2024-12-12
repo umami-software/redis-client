@@ -4,7 +4,7 @@ import * as process from 'node:process';
 const connections = {};
 const redisEnabled = !!process.env.REDIS_URL;
 
-function getClient(url: string = process.env.REDIS_URL || '') {
+function getClient(url: string = process.env.REDIS_URL || ''): UmamiRedisClient {
   const key = url || 'localhost';
 
   if (!connections[key]) {
