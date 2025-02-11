@@ -22,8 +22,9 @@ export class UmamiRedisClient {
 
   async connect() {
     if (!this.isConnected) {
-      await this.client.connect();
       this.isConnected = true;
+
+      await this.client.connect();
 
       log('Redis connected');
     }
