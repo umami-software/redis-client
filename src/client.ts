@@ -1,17 +1,5 @@
-import UmamiRedisClient from './UmamiRedisClient';
-import * as process from 'node:process';
+import { UmamiRedisClient, log, DELETED } from './UmamiRedisClient';
 
-const connections = {};
-const redisEnabled = !!process.env.REDIS_URL;
+const REDIS = Symbol();
 
-function getClient(url: string = process.env.REDIS_URL || ''): UmamiRedisClient {
-  const key = url || 'localhost';
-
-  if (!connections[key]) {
-    connections[key] = new UmamiRedisClient(url);
-  }
-
-  return connections[key];
-}
-
-export { UmamiRedisClient, getClient, redisEnabled };
+export { REDIS, UmamiRedisClient, log, DELETED };

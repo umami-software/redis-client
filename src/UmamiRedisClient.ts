@@ -1,9 +1,9 @@
 import { createClient, RedisClientType } from 'redis';
 import debug from 'debug';
 
-const log = debug('umami:redis-client');
+export const log = debug('umami:redis-client');
 
-const DELETED = '__DELETED__';
+export const DELETED = '__DELETED__';
 
 const logError = (err: unknown) => log(err);
 
