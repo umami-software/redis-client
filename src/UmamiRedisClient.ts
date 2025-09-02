@@ -7,12 +7,16 @@ export const DELETED = '__DELETED__';
 
 const logError = (err: unknown) => log(err);
 
+export interface UmamiRedisClientOptions {
+  url: string;
+}
+
 export class UmamiRedisClient {
   url: string;
   client: RedisClientType;
   isConnected: boolean;
 
-  constructor(url: string = '') {
+  constructor({ url }: UmamiRedisClientOptions) {
     const client = createClient({ url }).on('error', logError);
 
     this.url = url;

@@ -1,6 +1,6 @@
 {
   "name": "@umami/redis-client",
-  "version": "0.27.0",
+  "version": "0.29.0",
   "description": "Redis client wrapper",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -23,13 +23,13 @@
     "redis": "^4.5.1"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^22.0.2",
-    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
     "@types/node": "^18.7.13",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",
     "dotenv": "^10.0.0",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.25.9",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-import": "^2.22.1",
@@ -41,13 +41,13 @@
     "lint-staged": "^11.1.2",
     "prettier": "^2.2.1",
     "prettier-eslint": "^13.0.0",
-    "rollup": "^2.78.1",
+    "rollup": "^4.50.0",
     "rollup-plugin-dts": "^5.1.1",
     "rollup-plugin-esbuild": "^5.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-ts": "^3.4.5",
     "source-map-loader": "^3.0.0",
-    "typescript": "^5.3.2"
+    "typescript": "^5.9.2"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

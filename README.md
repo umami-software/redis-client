@@ -5,26 +5,19 @@ Redis client wrapper
 # Installation
 
 ```
-npm install @umami/redis-client
+pnpm add @umami/redis-client
 ```
 
 # Usage
 
-Declare an environment variable for the connection:
-
-```
-REDIS_URL=redis://username:password@hostname:port
-```
-
-Example usage:
-
 ```javascript
-import redisClient from '@umami/redis-client';
+import { UmamiRedisClient } from '@umami/redis-client';
 
-await redisClient.set('key', 'hello');
+const redis = new UmamiRedisClient({ url: process.env.REDIS_URL });
 
-const value = await redisClient.get('key');
+await redis.set('key', 'hello');
 ```
+
 
 # License
 
