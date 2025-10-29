@@ -90,7 +90,7 @@ export class UmamiRedisClient {
     }
 
     if (!result && query) {
-      return query().then(async data => {
+      return await Promise.resolve(query()).then(async data => {
         if (data) {
           await this.store(key, data, time);
         }
