@@ -15,6 +15,7 @@ export class UmamiRedisClient {
   url: string;
   client: RedisClientType;
   isConnected: boolean;
+  connectPromise: Promise<void> | null;
 
   constructor({ url }: UmamiRedisClientOptions) {
     const client = createClient({ url }).on('error', logError);
@@ -22,16 +23,31 @@ export class UmamiRedisClient {
     this.url = url;
     this.client = client as RedisClientType;
     this.isConnected = false;
+    this.connectPromise = null;
   }
 
   async connect() {
-    if (!this.isConnected) {
-      this.isConnected = true;
-
-      await this.client.connect();
-
-      log('Redis connected');
+    if (this.isConnected) {
+      return;
     }
+
+    if (!this.connectPromise) {
+      this.connectPromise = (async () => {
+        try {
+          await this.client.connect();
+
+          this.isConnected = true;
+
+          log('Redis connected');
+        } catch (err) {
+          this.connectPromise = null;
+
+          throw err;
+        }
+      })();
+    }
+
+    return this.connectPromise;
   }
 
   async get(key: string) {
